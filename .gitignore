@@ -3,3 +3,5 @@ Logs/
 Packages/
 UserSettings/
 Temp/
+LIVID.sln
+*.csproj
