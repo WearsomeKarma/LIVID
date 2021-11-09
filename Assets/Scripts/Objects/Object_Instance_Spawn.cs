@@ -32,4 +32,25 @@ public class Object_Instance_Spawn
     private float offset_Radius;
     internal float Offset_Radius
         => offset_Radius;
+
+    /// <summary>
+    /// This determines the density which this
+    /// object will spawn in an area.
+    /// </summary>
+    [SerializeField]
+    private double noise_Density;
+    internal double Noise_Density
+        => noise_Density;
+
+    /// <summary>
+    /// This is the vector3 offset for where the
+    /// object will spawn relative to it's chosen
+    /// position. This is typically used to offset
+    /// the height of a tree so it's not floating
+    /// above the ground, or peeking out of the ground.
+    /// </summary>
+    [SerializeField]
+    private Vector3 offset_Spawn;
+    internal Vector3 Offset_Spawn
+        => offset_Spawn;
 }

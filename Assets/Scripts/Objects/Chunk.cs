@@ -1,23 +1,33 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public sealed class Chunk :
     IDisposable
 {
-    private NoiseMap Chunk_HEIGHT_MAP { get; }
-    private GameObject Chunk_GAME_OBJECT { get; set; } 
-    public int Chunk_X { get; }
-    public int Chunk_Y { get; }
+    internal NoiseMap Chunk_HEIGHT_MAP { get; }
+    internal GameObject Chunk_Game_Object { get; set; } 
+    internal Chunk_Position Chunk_Position { get; set; }
 
-    internal Chunk(NoiseMap heightMap, int cx, int cy)
+    private List<GameObject> Chunk_STRUCTURES { get; }
+
+    internal Chunk(NoiseMap heightMap, Chunk_Position chunk_Position)
     {
         Chunk_HEIGHT_MAP = heightMap;
-        Chunk_X = cx;
-        Chunk_Y = cy;
+        Chunk_Position = chunk_Position;
+
+        Chunk_STRUCTURES = new List<GameObject>();
+    }
+
+    internal void Add_Structure(GameObject structure)
+    {
+        Chunk_STRUCTURES.Add(structure);
     }
 
     public void Dispose()
     {
-        GameObject.Destroy(Chunk_GAME_OBJECT);
+        GameObject.Destroy(Chunk_Game_Object);
+        foreach(GameObject structure in Chunk_STRUCTURES)
+            GameObject.Destroy(structure);
     }
 }

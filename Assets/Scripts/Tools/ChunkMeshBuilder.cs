@@ -7,25 +7,35 @@ public static class ChunkMeshBuilder
     public static Mesh Build_Height_Mesh(NoiseMap heightMap)
     {
         Vector3[] vertices = new Vector3[heightMap.SIZE * heightMap.SIZE];
-        int[] triangles = new int[vertices.Length * TRIANGLE_OFFSET];
+        int sizeOffset = heightMap.SIZE - 1;
+        int[] triangles = new int[sizeOffset * sizeOffset * TRIANGLE_OFFSET];
 
-        for(int z = 0, i = 0; z < heightMap.SIZE; z++)
+        for(int z = 0, v = 0; z < heightMap.SIZE; z++)
         {
             for(int x = 0; x < heightMap.SIZE; x++)
             {
-                vertices[i] = new Vector3(x, (float)heightMap[x,z], z);
-                i++;
-
-                if (i % TRIANGLE_OFFSET != 0)
-                    continue;
-
-                triangles[i]   = i;
-                triangles[i+1] = i + heightMap.SIZE;
-                triangles[i+2] = i + 1;
-                triangles[i+3] = i + 1;
-                triangles[i+4] = i + heightMap.SIZE + 1;
-                triangles[i+5] = i + heightMap.SIZE + 2;
+                vertices[v] = new Vector3(x, (float)heightMap[x,z], z);
+                v++;
             }
+        }
+
+        int vert = 0;
+        int tri  = 0;
+        for(int tri_z = 0; tri_z < sizeOffset; tri_z++)
+        {
+            for(int tri_x = 0; tri_x < sizeOffset; tri_x++)
+            {
+                triangles[tri]   = vert;
+                triangles[tri+1] = vert + sizeOffset + 1;
+                triangles[tri+2] = vert + 1;
+                triangles[tri+3] = vert + 1;
+                triangles[tri+4] = vert + sizeOffset + 1;
+                triangles[tri+5] = vert + sizeOffset + 2;
+
+                tri+=TRIANGLE_OFFSET;
+                vert++;
+            }
+            vert++;
         }
 
         Mesh mesh = new Mesh();

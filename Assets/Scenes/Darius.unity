@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -123,6 +123,113 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &280981659
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 280981661}
+  - component: {fileID: 280981660}
+  - component: {fileID: 280981662}
+  m_Layer: 0
+  m_Name: World_Generator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &280981660
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 280981659}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bd65f4c315157811af2919b279ac713, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  seed: 0
+  noise_Frequency: 2
+  render_Distance: 10
+  player: {fileID: 2027461213}
+  chunk_Post_Processors:
+  - {fileID: 280981662}
+--- !u!4 &280981661
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 280981659}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &280981662
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 280981659}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a4a1799789e6177f954c2ce29fb66d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defined_Biomes:
+  - biome_Seed: 0
+    biome_Ground: {fileID: 2100000, guid: ad281e5719f12f19eae84266863016fd, type: 2}
+    biome_Structures:
+    - object_Instance: {fileID: 4200147983995726976, guid: a6960c1e64c2db32d8153852a8a6100f, type: 3}
+      empty_Allocation_Radius: 0
+      offset_Radius: 0
+      noise_Density: 0.975
+      offset_Spawn: {x: 0, y: -0.05, z: 0}
+      noise_Threshold: 0.2
+    - object_Instance: {fileID: 8964147368489820646, guid: e0792d5557c8f2522adb964e6717a9d3, type: 3}
+      empty_Allocation_Radius: 0
+      offset_Radius: 0
+      noise_Density: 0.945
+      offset_Spawn: {x: 0, y: -0.05, z: 0}
+      noise_Threshold: 0.2
+    - object_Instance: {fileID: 2899818679645774103, guid: 0e154074fa7a01807a89527637b89bb7, type: 3}
+      empty_Allocation_Radius: 0
+      offset_Radius: 0
+      noise_Density: 0.98
+      offset_Spawn: {x: 0, y: -0.05, z: 0}
+      noise_Threshold: 0.2
+    - object_Instance: {fileID: 5795910690425043807, guid: e44b305c3adfa785a91286082b24e40f, type: 3}
+      empty_Allocation_Radius: 0
+      offset_Radius: 0
+      noise_Density: 0.985
+      offset_Spawn: {x: 0, y: -0.05, z: 0}
+      noise_Threshold: 0.2
+    - object_Instance: {fileID: 7992844730056657777, guid: ab7c065406c5dfe5babeddef699d78f1, type: 3}
+      empty_Allocation_Radius: 0
+      offset_Radius: 0
+      noise_Density: 0.965
+      offset_Spawn: {x: 0, y: -0.05, z: 0}
+      noise_Threshold: 0.2
+    biome_Mobs: []
+  - biome_Seed: 0
+    biome_Ground: {fileID: 2100000, guid: ad281e5719f12f19eae84266863016fd, type: 2}
+    biome_Structures:
+    - object_Instance: {fileID: 6354098448525369046, guid: 820adc25b996699d6ad589305eb2c55a, type: 3}
+      empty_Allocation_Radius: 0
+      offset_Radius: 0
+      noise_Density: 0.985
+      offset_Spawn: {x: 0, y: -0.05, z: 0}
+      noise_Threshold: 0.2
+    biome_Mobs: []
 --- !u!1 &868498707
 GameObject:
   m_ObjectHideFlags: 0
@@ -293,7 +400,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2027461213}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalPosition: {x: 0, y: 16, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
