@@ -1,16 +1,10 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public sealed class Chunk_Generator :
     MonoBehaviour
 {
-    /// <summary>
-    /// The number of vertices along the edge of
-    /// each chunk. Chunks are square in size.
-    /// </summary>
-    public const int CHUNK_VERTEX_SIZE = 16;
-    public const int CHUNK_CELL_SIZE = CHUNK_VERTEX_SIZE-1;
-
     /// <summary>
     /// The seed of the generator. Changing this
     /// during runtime can have some weird effects
@@ -21,19 +15,6 @@ public sealed class Chunk_Generator :
     private int seed = 0;
     public int Seed
         => seed;
-    
-    /// <summary>
-    /// This is the level of percision the noise maps
-    /// for each chunk will be generated to. A higher
-    /// noise frequency will give more variation in terrain
-    /// but may become chaotic. Additionally, any values above
-    /// the CHUNK_VERTEX_SIZE limit (default 16) will cause issues.
-    /// Increasing this will lower the game performace.
-    /// </summary>
-    [SerializeField]
-    private int noise_Frequency = 2;
-    public int Noise_Frequency
-        => noise_Frequency;
 
     /// <summary>
     /// The inital distance which 
@@ -51,34 +32,83 @@ public sealed class Chunk_Generator :
     /// </summary>
     [SerializeField]
     private GameObject player;
-    /// <summary>
-    /// The X chunk index of the player.
-    /// </summary>
-    private int player_Chunk_X = -999; //Values set to -999 to cause inital world generation.
-    /// <summary>
-    /// The Z chunk index of the player.
-    /// </summary>
-    private int player_Chunk_Z = -999;
-    private Chunk_Position Player_Base_Chunk_Position
-        => new Chunk_Position(player_Chunk_X, player_Chunk_Z);
 
     /// <summary>
-    /// Represents anything that cares about the
-    /// formation of a chunk.
+    /// The material which the ground uses.
     /// </summary>
     [SerializeField]
-    private Chunk_Post_Processor[] chunk_Post_Processors;
+    private Material ground_Material;
 
-    private readonly List<Chunk> Chunk_Map = new List<Chunk>();
+    [SerializeField]
+    Texture2D biome_Gradient;
+
+    [SerializeField]
+    private Biome[] biomes;
+
+    private World Chunk_Generator__World { get; set; }
+    private Spatial_Table<Runtime_Chunk> Runtime_Chunk_Map { get; set; }
+    private Vector3 Chunk_Generator__World_Offset { get; set; }
 
     public void Start()
     {
-        System.Random seeder = new System.Random(seed);
-        foreach(Chunk_Post_Processor processor in chunk_Post_Processors)
+        int sqrtSize = Mathf.CeilToInt(Mathf.Sqrt(biomes.Length));
+        if (sqrtSize*sqrtSize <= biomes.Length)
+            sqrtSize++;
+
+        Biome[,] biomeGrid = new Biome[sqrtSize,sqrtSize];
+
+        for(int i=0, b=0;i<sqrtSize;i++)
         {
-            int procesorSeed = seeder.Next();
-            processor.Initalize(procesorSeed);
+            for(int j=0;j<sqrtSize;j++)
+            {
+                if (j < i)
+                {
+                    biomeGrid[j,i] = null;
+                    continue;
+                }
+
+                int index = b;
+                b++;
+
+                index = (index < biomes.Length) ? index: biomes.Length - 1;
+                
+                biomeGrid[j,i] = biomes[index];
+            }
         }
+
+        Chunk_Generator__World =
+            new World
+            (
+                Seed, 
+                render_Distance,
+                sqrtSize,
+                biomeGrid,
+                biome_Gradient,
+                handleInitialGeneration: Set_Player_SpawnY
+            );
+
+        int size = Chunk_Noise_Table.CHUNK_SIZE - 1;
+        Chunk_Generator__World_Offset =
+            new Vector3(size * Chunk_Generator__World.Table_Size / -2, 0, size * Chunk_Generator__World.Table_Size / -2);
+
+        Runtime_Chunk_Map =
+            new Spatial_Table<Runtime_Chunk>
+            (
+                render_Distance,
+                new Noise_Position(-999,-999),
+                Chunk_Noise_Table.CHUNK_SIZE,
+                Generate_Chunk,
+                Delete_Chunk
+            );
+    }
+
+    private void Set_Player_SpawnY()
+    {
+        float height = (float)
+            Chunk_Generator__World.Get_Height(player.transform.position - Chunk_Generator__World_Offset);
+
+        player.transform.position =
+            new Vector3(player.transform.position.x, height, player.transform.position.z);
     }
 
     public void Update()
@@ -86,130 +116,33 @@ public sealed class Chunk_Generator :
         //On each update, check to see if the player
         //has updated their chunk index by moving.
         
-        Vector3 delta_Player_Chunk_Pos =
-            player.transform.position 
-            /
-            CHUNK_CELL_SIZE;
+        Vector3 center = 
+            player.transform.position;
 
-        int next_Player_Chunk_X =
-            (int)delta_Player_Chunk_Pos.x;
-        int next_Player_Chunk_Z =
-            (int)delta_Player_Chunk_Pos.z;
+        Chunk_Generator__World
+            .Check_For_Updates(center, out _, out _);
 
-        bool changeInX =
-            next_Player_Chunk_X
-            != 
-            player_Chunk_X;
+        List<Noise_Position> generatedPositions;
 
-        bool changeInZ =
-            next_Player_Chunk_Z
-            != 
-            player_Chunk_Z;
+        Runtime_Chunk_Map
+            .Check_For_Updates(center, out _, out generatedPositions);
 
-        if (changeInX || changeInZ)
-        {
-
-        Debug.Log($"COMPARE {delta_Player_Chunk_Pos} to {Player_Base_Chunk_Position}");
-            player_Chunk_X = next_Player_Chunk_X;
-            player_Chunk_Z = next_Player_Chunk_Z;
-
-            IEnumerable<Chunk_Position> requiredPositions = 
-                Relocate_Chunks();
-            Generate_Chunks(requiredPositions);
-        }
+        Adjust_Seams(generatedPositions);
     }
 
-    /// <summary>
-    /// This will move local chunks to new logical positions
-    /// if they are to be reused. Otherwise record the missing
-    /// position and return all missing positions.
-    /// </summary>
-    private IEnumerable<Chunk_Position> Relocate_Chunks()
+    private void Delete_Chunk(Noise_Position invalidPosition)
     {
-        List<Chunk_Position> requiredPositions =
-            new List<Chunk_Position>();
-
-        for(int scan_z=-render_Distance; scan_z < render_Distance; scan_z++)
-        {
-            for(int scan_x=-render_Distance; scan_x < render_Distance; scan_x++)
-            {
-                Chunk_Position scanning_Position =
-                    new Chunk_Position(scan_x, scan_z)
-                    +
-                    Player_Base_Chunk_Position;
-
-                int distToPlayer =
-                    Chunk_Position.Distance_Squared
-                    (
-                        scanning_Position,
-                        Player_Base_Chunk_Position
-                    );
-
-                if (distToPlayer <= Render_Distance_Squared)
-                {
-                    requiredPositions.Add(scanning_Position);
-                }
-            }
-        }
-
-        foreach(Chunk chunk in Chunk_Map.ToArray())
-        {
-            int distToPlayer = 
-                Chunk_Position.Distance_Squared
-                (
-                    chunk.Chunk_Position,
-                    Player_Base_Chunk_Position
-                );
-
-            if (distToPlayer <= Render_Distance_Squared)
-            {
-                requiredPositions.Remove(chunk.Chunk_Position);
-                continue;
-            }
-
-            chunk.Dispose();
-            Chunk_Map.Remove(chunk);
-        }
-
-        return requiredPositions;
+        Runtime_Chunk invalidChunk = Runtime_Chunk_Map[invalidPosition];
+        invalidChunk?.Dispose();
     }
 
-    private void Generate_Chunks(IEnumerable<Chunk_Position> requiredPositions)
+    private Runtime_Chunk Generate_Chunk(Noise_Position position)
     {
-        foreach(Chunk_Position requiredPosition in requiredPositions)
-        {
-            Chunk generated_Chunk = 
-                Generate_Chunk(requiredPosition);
+        Chunk chunk = Chunk_Generator__World[position];
 
-            foreach(Chunk_Post_Processor post_Processor in chunk_Post_Processors)
-            {
-                post_Processor.Post_Process_Chunk(generated_Chunk);
-            }
+        Mesh ground_Mesh = ChunkMeshBuilder.Build_Height_Mesh(chunk, Chunk_Noise_Table.CHUNK_SIZE);
 
-            Chunk_Map.Add(generated_Chunk);
-        }
-    }
-
-    private Chunk Generate_Chunk(Chunk_Position chunkWorldPosition)
-    {
-        NoiseMap height_Map = 
-            DariusPerlinNoise.Get_Noise_Map
-            (
-                chunkWorldPosition,
-                2,
-                seed
-            ); 
-
-        for(int chunk_z=0;chunk_z<height_Map.SIZE;chunk_z++)
-        {
-            for(int chunk_x=0;chunk_x<height_Map.SIZE;chunk_x++)
-            {
-                double y = height_Map[chunk_x, chunk_z];
-                height_Map[chunk_x, chunk_z] = System.Math.Floor(10 * y);
-            }
-        }
-
-        Mesh ground_Mesh = ChunkMeshBuilder.Build_Height_Mesh(height_Map);
+        ground_Mesh.colors = chunk.Chunk_GROUND_COLORS;
 
         GameObject ground_Object = new GameObject();
         MeshFilter ground_Mesh_Filter = 
@@ -222,23 +155,206 @@ public sealed class Chunk_Generator :
         ground_Mesh_Filter.mesh = ground_Mesh;
         ground_Mesh_Collider.sharedMesh = ground_Mesh;
 
-        ground_Mesh.RecalculateBounds();
-        ground_Mesh.RecalculateNormals();
+        ground_Mesh_Render.material = ground_Material;
 
-        Chunk generated_Chunk = 
-            new Chunk
+        Runtime_Chunk generated_Chunk = 
+            new Runtime_Chunk
             (
-                height_Map,
-                chunkWorldPosition
+                chunk,
+                position
             )
             {
                 Chunk_Game_Object = ground_Object
             };
 
+        int size = Chunk_Noise_Table.CHUNK_SIZE -1;
+
         ground_Object.transform.position = 
-            new Vector3(CHUNK_CELL_SIZE * chunkWorldPosition.CHUNK_X, 0, CHUNK_CELL_SIZE * chunkWorldPosition.CHUNK_Z);
-        ground_Object.name = chunkWorldPosition.ToString();
+            new Vector3(size * chunk.Spatial_Position.NOISE_X, 0, size * chunk.Spatial_Position.NOISE_Z)
+            +
+            Chunk_Generator__World_Offset;
+        ground_Object.name = position.ToString();
+
+        /*
+        foreach(Object_Instance_Spawn structure_Instance in chunk.Get_Structure_Object())
+        {
+            GameObject structure = structure_Instance.Create_Instance();
+
+            generated_Chunk.Add_Structure(structure);
+        }
+        */
 
         return generated_Chunk;
+    }
+
+    private void Adjust_Seams(List<Noise_Position> generatedPositions)
+    {
+        if (generatedPositions == null)
+            return;
+
+        foreach(Noise_Position position in generatedPositions)
+            Adjust_Seams(position);
+    }
+
+    private void Adjust_Seams(Noise_Position position)
+    {
+        Noise_Position below =
+            position
+            +
+            new Noise_Position(0,-1);
+
+        Noise_Position left =
+            position
+            +
+            new Noise_Position(-1,0);
+
+        Runtime_Chunk belowChunk = Runtime_Chunk_Map[below];
+        Runtime_Chunk leftChunk = Runtime_Chunk_Map[left];
+
+        bool isAvailable_Below =
+            belowChunk != null;
+        bool isAvailable_Left =
+            leftChunk != null;
+
+        if (isAvailable_Below)
+            Stitch(Runtime_Chunk_Map[position], belowChunk, Stitch_Below);
+        if (isAvailable_Left)
+            Stitch(Runtime_Chunk_Map[position], leftChunk, Stitch_Left);
+    }
+
+    private void Stitch
+    (   
+        Runtime_Chunk subject, 
+        Runtime_Chunk neighbor, 
+        Action<Vector3[], Vector3[], Vector3[], Vector3[], int> stitcher
+    )
+    {
+        Mesh meshSubject = 
+            subject
+            .Chunk_Game_Object
+            .GetComponent<MeshFilter>()
+            .mesh;
+        Vector3[] subject_Vertices =
+            meshSubject
+            .vertices;
+        Vector3[] subject_Normals =
+            meshSubject
+            .normals;
+        Mesh meshNeighbor =
+            neighbor
+            .Chunk_Game_Object
+            .GetComponent<MeshFilter>()
+            .mesh;
+        Vector3[] neighbor_Vertices =
+            meshNeighbor
+            .vertices;
+        Vector3[] neighbor_Normals =
+            meshNeighbor
+            .normals;
+        for(int i=0;i<Chunk_Noise_Table.CHUNK_SIZE;i++)
+        {
+            stitcher
+            (  
+                subject_Vertices, 
+                neighbor_Vertices, 
+                subject_Normals,
+                neighbor_Normals,
+                i
+            );
+        }
+
+        meshSubject.vertices = subject_Vertices;
+        meshSubject.normals = subject_Normals;
+
+        meshNeighbor.vertices = neighbor_Vertices;
+        meshNeighbor.normals = subject_Normals;
+
+        meshSubject.RecalculateBounds();
+        meshSubject.RecalculateNormals();
+
+        meshNeighbor.RecalculateBounds();
+        meshNeighbor.RecalculateNormals();
+    }
+
+    private void Stitch_Below
+    (
+        Vector3[] subject_Vertices, 
+        Vector3[] neighbor_Vertices, 
+        Vector3[] subject_Normals,
+        Vector3[] neighbor_Normals,
+        int index
+    )
+    {
+        int vertexIndex_Subject  = 
+            index; 
+        int vertexIndex_Neighbor = 
+            subject_Vertices.Length 
+            -
+            Chunk_Noise_Table.CHUNK_SIZE 
+            +
+            index;
+
+        Stitch
+        (
+            subject_Vertices, 
+            neighbor_Vertices, 
+            subject_Normals,
+            neighbor_Normals,
+            vertexIndex_Subject, 
+            vertexIndex_Neighbor
+        );
+    }
+
+    private void Stitch_Left
+    (
+        Vector3[] subject_Vertices, 
+        Vector3[] neighbor_Vertices, 
+        Vector3[] subject_Normals,
+        Vector3[] neighbor_Normals,
+        int index
+    )
+    {
+        int vertexIndex_Subject  = 
+            Chunk_Noise_Table.CHUNK_SIZE * index;
+        int vertexIndex_Neighbor =
+            (Chunk_Noise_Table.CHUNK_SIZE * (index + 1)) - 1;
+
+        Stitch
+        (
+            subject_Vertices, 
+            neighbor_Vertices, 
+            subject_Normals,
+            neighbor_Normals,
+            vertexIndex_Subject, 
+            vertexIndex_Neighbor
+        );
+    }
+
+    private void Stitch
+    (
+        Vector3[] subject_Vertices, Vector3[] neighbor_Vertices, 
+        Vector3[] subject_Normals, Vector3[] neighbor_Normals,
+        int vertexIndex_Subject, int vertexIndex_Neighbor
+    )
+    {
+        Vector3 vector_Subject = subject_Vertices[vertexIndex_Subject];
+        Vector3 vector_Neighbor = neighbor_Vertices[vertexIndex_Neighbor];
+
+        float x = vector_Subject.x;
+        float z = vector_Subject.z;
+        
+        float y = vector_Neighbor.y;
+
+        subject_Vertices[vertexIndex_Subject]
+            = new Vector3(x,y,z);
+
+        Vector3 normal_Subject = subject_Normals[vertexIndex_Subject];
+        Vector3 normal_Neighbor = neighbor_Normals[vertexIndex_Neighbor];
+
+        Vector3 cross = Vector3.Cross(normal_Subject, normal_Neighbor);
+        Vector3 cross_normalized = cross.normalized;
+
+        subject_Normals[vertexIndex_Subject] = cross_normalized;
+        neighbor_Normals[vertexIndex_Neighbor] = cross_normalized;
     }
 }

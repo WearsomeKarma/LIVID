@@ -10,5 +10,5 @@ public abstract class Chunk_Post_Processor :
         Seed = postProcessorSeed;
     }
 
-    internal abstract void Post_Process_Chunk(Chunk c);
+    internal abstract void Post_Process_Chunk(Runtime_Chunk c);
 }

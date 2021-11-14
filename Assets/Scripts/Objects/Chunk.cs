@@ -1,33 +1,33 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public sealed class Chunk :
-    IDisposable
+public class Chunk : Spatial_Element
 {
-    internal NoiseMap Chunk_HEIGHT_MAP { get; }
-    internal GameObject Chunk_Game_Object { get; set; } 
-    internal Chunk_Position Chunk_Position { get; set; }
+    private NoiseMap Chunk_HEIGHT_MAP { get; }
+    internal Color[] Chunk_GROUND_COLORS { get; }
+    private List<Object_Instance_Spawn> Chunk_STRUCTURES { get; }
+    internal IEnumerable<Object_Instance_Spawn> Get_Structure_Object()
+        => Chunk_STRUCTURES;
 
-    private List<GameObject> Chunk_STRUCTURES { get; }
+    public Vector3 Chunk_WORLD_POSTIION { get; }
 
-    internal Chunk(NoiseMap heightMap, Chunk_Position chunk_Position)
+    public Chunk
+    (
+        Vector3 chunkWorldPosition,
+        NoiseMap heightMap,
+        Color[] groundColor,
+        List<Object_Instance_Spawn> structures
+    )
     {
         Chunk_HEIGHT_MAP = heightMap;
-        Chunk_Position = chunk_Position;
+        Chunk_GROUND_COLORS = groundColor;
+        Chunk_STRUCTURES = structures;
 
-        Chunk_STRUCTURES = new List<GameObject>();
+        Chunk_WORLD_POSTIION = chunkWorldPosition;
     }
 
-    internal void Add_Structure(GameObject structure)
-    {
-        Chunk_STRUCTURES.Add(structure);
-    }
-
-    public void Dispose()
-    {
-        GameObject.Destroy(Chunk_Game_Object);
-        foreach(GameObject structure in Chunk_STRUCTURES)
-            GameObject.Destroy(structure);
-    }
+    public double this[Noise_Position position]
+        => Chunk_HEIGHT_MAP[position];
+    public double this[int x, int z]
+        => Chunk_HEIGHT_MAP[x,z];
 }

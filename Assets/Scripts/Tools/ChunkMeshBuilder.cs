@@ -4,17 +4,19 @@ public static class ChunkMeshBuilder
 {
     private const int TRIANGLE_OFFSET = 6;
 
-    public static Mesh Build_Height_Mesh(NoiseMap heightMap)
+    public static Mesh Build_Height_Mesh(Chunk chunk, int size)
     {
-        Vector3[] vertices = new Vector3[heightMap.SIZE * heightMap.SIZE];
-        int sizeOffset = heightMap.SIZE - 1;
+        Vector3[] vertices = new Vector3[size*size];
+        int sizeOffset = size - 1;
         int[] triangles = new int[sizeOffset * sizeOffset * TRIANGLE_OFFSET];
 
-        for(int z = 0, v = 0; z < heightMap.SIZE; z++)
+        for(int z = 0, v = 0; z < size; z++)
         {
-            for(int x = 0; x < heightMap.SIZE; x++)
+            for(int x = 0; x < size; x++)
             {
-                vertices[v] = new Vector3(x, (float)heightMap[x,z], z);
+                float y = (float)chunk[x,z];
+                y = Mathf.RoundToInt(y);
+                vertices[v] = new Vector3(x, y, z);
                 v++;
             }
         }

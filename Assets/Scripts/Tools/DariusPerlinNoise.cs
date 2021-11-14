@@ -2,17 +2,24 @@ using UnityEngine;
 
 public static class DariusPerlinNoise
 {
-    public static NoiseMap Get_Noise_Map(Chunk_Position chunk_Position, int frequency, int seed, double peak = 1)
+    public static NoiseMap Get_Noise_Map
+    (
+        Noise_Position chunk_Position, 
+        int frequency, 
+        int size,
+        int seed, 
+        double peak = 1
+    )
     {
         NoiseMap ret = 
-            new NoiseMap(Chunk_Generator.CHUNK_VERTEX_SIZE);
+            new NoiseMap(size);
 
-        int stride = Chunk_Generator.CHUNK_VERTEX_SIZE;
+        int stride = size;
 
         Vector2 chunkTilePos = 
-            new Vector2(chunk_Position.CHUNK_X, chunk_Position.CHUNK_Z) 
+            new Vector2(chunk_Position.NOISE_X, chunk_Position.NOISE_Z) 
             * 
-            Chunk_Generator.CHUNK_VERTEX_SIZE;
+            size;
 
         Vector2 strideOffset;
 
@@ -23,9 +30,9 @@ public static class DariusPerlinNoise
 
         for (int period = 0; period < frequency; period++)
         {
-            for (int x_stride = 0; x_stride * stride < Chunk_Generator.CHUNK_VERTEX_SIZE; x_stride++)
+            for (int x_stride = 0; x_stride * stride < size; x_stride++)
             {
-                for (int z_stride = 0; z_stride * stride < Chunk_Generator.CHUNK_VERTEX_SIZE; z_stride++)
+                for (int z_stride = 0; z_stride * stride < size; z_stride++)
                 {
                     strideOffset = chunkTilePos + new Vector2(x_stride * stride, z_stride * stride);
 
@@ -56,8 +63,18 @@ public static class DariusPerlinNoise
         float xw = (x) / (stride - 1);
         float zw = (z) / (stride - 1);
 
+        float xw_1 = (1-xw);
+        float zw_1 = (1-zw);
+
+        float weight_h0 = xw_1 * zw_1 * h0;
+        float weight_h1 = xw * zw_1 * h1;
+        float weight_h2 = xw_1 * zw * h2;
+        float weight_h3 = xw * zw * h3;
+
+        return weight_h0 + weight_h1 + weight_h2 + weight_h3;
+
         //Lerping function
-        return ((1f - zw) * (h0 + (xw * (h1 - h0)))) + (zw * (h2 + (xw * (h3 - h2))));
+        //return ((1f - zw) * (h0 + (xw * (h1 - h0)))) + (zw * (h2 + (xw * (h3 - h2))));
     }
 
     public static float Get_Noise(int x, int z, int seed)
