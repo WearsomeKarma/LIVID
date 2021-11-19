@@ -104,8 +104,10 @@ public sealed class Chunk_Generator :
 
     private void Set_Player_SpawnY()
     {
-        float height = (float)
-            Chunk_Generator__World.Get_Height(player.transform.position - Chunk_Generator__World_Offset);
+        float height =
+            4
+            +
+            (float)Chunk_Generator__World.Get_Height(player.transform.position - Chunk_Generator__World_Offset);
 
         player.transform.position =
             new Vector3(player.transform.position.x, height, player.transform.position.z);
@@ -169,20 +171,31 @@ public sealed class Chunk_Generator :
 
         int size = Chunk_Noise_Table.CHUNK_SIZE -1;
 
-        ground_Object.transform.position = 
+        Vector3 groundPosition = 
             new Vector3(size * chunk.Spatial_Position.NOISE_X, 0, size * chunk.Spatial_Position.NOISE_Z)
             +
             Chunk_Generator__World_Offset;
+        ground_Object.transform.position = groundPosition;
         ground_Object.name = position.ToString();
 
-        /*
         foreach(Object_Instance_Spawn structure_Instance in chunk.Get_Structure_Object())
         {
             GameObject structure = structure_Instance.Create_Instance();
 
+            Noise_Position local = 
+                Noise_Position.Positive_Modulo(structure_Instance.Instance_POSITION, Chunk_Noise_Table.CHUNK_SIZE);
+
+            float x = local.NOISE_X;
+            float y = (float)chunk[local];
+            float z = local.NOISE_Z;
+
+            structure.transform.position =
+                new Vector3(x,y,z)
+                +
+                groundPosition;
+
             generated_Chunk.Add_Structure(structure);
         }
-        */
 
         return generated_Chunk;
     }

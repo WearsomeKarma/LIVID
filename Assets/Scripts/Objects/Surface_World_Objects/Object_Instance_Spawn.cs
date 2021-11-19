@@ -10,12 +10,10 @@ public struct Object_Instance_Spawn
     /// </summary>
     [SerializeField]
     private GameObject object_Instance;
-    private Vector3 Instance_POSITION { get; }
+    public Noise_Position Instance_POSITION { get; }
     internal GameObject Create_Instance()
     {
         GameObject instance = GameObject.Instantiate(object_Instance);
-        instance.transform.position =
-            Instance_POSITION;
 
         return instance;
     }
@@ -23,7 +21,7 @@ public struct Object_Instance_Spawn
     public Object_Instance_Spawn
     (
         Object_Instance_Spawn copy,
-        Vector3 instance_Position
+        Noise_Position instance_Position
     )
     {
         object_Instance = copy.object_Instance;
@@ -37,10 +35,7 @@ public struct Object_Instance_Spawn
         offset_Spawn = copy.offset_Spawn;
 
         object_Instance = copy.object_Instance;
-        Instance_POSITION = 
-            instance_Position
-            +
-            offset_Spawn;
+        Instance_POSITION = instance_Position;
     }
 
     /// <summary>

@@ -6,7 +6,8 @@ public class World :
     Spatial_Table<Chunk>
 {
     private Chunk_Noise_Table World__CHUNK_HEIGHT_MAPS;
-    private Chunk_Noise_Table World__CHUNK_STRUCTURE_NOISE { get; }
+    private Chunk_Noise_Table World__CHUNK_STRUCTURE_GROUP_MAP { get; }
+    private Chunk_Noise_Table World__CHUNK_STRUCTURE_NOISE_MAP { get; }
 
     private World_Noise_Table World__BIOME_HEIGHT_MAPS;
     private World_Noise_Table World__BIOME_TEMPERATURE_MAPS { get; }
@@ -42,6 +43,7 @@ public class World :
         System.Random seeder = new System.Random(seed);
         int seed_BiomeHeightMap = seed;
         int seed_ChunkHeightMap = seeder.Next();
+        int seed_ChunkStructureGroup = seeder.Next();
         int seed_ChunkStructureNoise = seeder.Next();
         int seed_BiomeTempMap = seeder.Next();
         int seed_BiomeMoistureMap = seeder.Next();
@@ -68,12 +70,21 @@ public class World :
                 init_Pos
             );
 
-        World__CHUNK_STRUCTURE_NOISE =
+        World__CHUNK_STRUCTURE_GROUP_MAP =
             new Chunk_Noise_Table
             (
-                seed_ChunkStructureNoise,
+                seed_ChunkStructureGroup,
                 table_Size,
                 init_Pos
+            );
+
+        World__CHUNK_STRUCTURE_NOISE_MAP =
+            new Chunk_Noise_Table
+            (
+                seed_ChunkStructureGroup,
+                table_Size,
+                init_Pos,
+                (p) => StaticNoise.Get_Noise_Map(p, seed_ChunkStructureGroup)
             );
 
         Noise_Position world_Offset
@@ -133,7 +144,9 @@ public class World :
 
         World__CHUNK_HEIGHT_MAPS
             .Check_For_Updates(worldSpaceCenter, out returned, out _);
-        World__CHUNK_STRUCTURE_NOISE
+        World__CHUNK_STRUCTURE_GROUP_MAP
+            .Check_For_Updates(worldSpaceCenter, out returned, out _);
+        World__CHUNK_STRUCTURE_NOISE_MAP
             .Check_For_Updates(worldSpaceCenter, out returned, out _);
 
         base.Check_For_Updates(worldSpaceCenter, out invalidPositions, out generatedPositions);
@@ -160,8 +173,11 @@ public class World :
         NoiseMap chunk_Base_Height_Map =
             World__CHUNK_HEIGHT_MAPS[position];
 
+        NoiseMap chunk_Structure_Group =
+            World__CHUNK_STRUCTURE_GROUP_MAP[position];
+
         NoiseMap chunk_Structure_Noise =
-            World__CHUNK_STRUCTURE_NOISE[position];
+            World__CHUNK_STRUCTURE_NOISE_MAP[position];
 
         NoiseMap chunk_Final_Height_Map =
             new NoiseMap(Chunk_Noise_Table.CHUNK_SIZE);
@@ -203,7 +219,7 @@ public class World :
                     );
 
                 chunk_Final_Height_Map[chunk_Local_Position] =
-                    chunkHeight;
+                    System.Math.Round(chunkHeight);
 
                 //clamp moisture under temp
                 double temperature  = world_Temp_Map[biome_Specific_Position];
@@ -211,7 +227,7 @@ public class World :
 
                 //reduce moisture with biome height
                 moisture = NoiseBlender.Moderate_By_Height(moisture, world_Height);
-                temperature = NoiseBlender.Moderate_By_Height(temperature, world_Height);
+                //temperature = NoiseBlender.Moderate_By_Height(temperature, world_Height);
 
                 moisture = (moisture < 0) ? 0 : (moisture > temperature ? temperature : moisture); 
 
@@ -227,7 +243,8 @@ public class World :
                 Object_Instance_Spawn? structureInstance =
                     biome?.Get_Structure_Spawn
                     (
-                        new Vector3(gamespace_Specific_Position.NOISE_X, (float)chunkHeight, gamespace_Specific_Position.NOISE_Z),
+                        gamespace_Specific_Position,
+                        chunk_Structure_Group[chunk_Local_Position],
                         chunk_Structure_Noise[chunk_Local_Position],
                         temperature,
                         moisture
@@ -295,7 +312,7 @@ public class World :
     {
         gamespacePosition = new Noise_Position(position);
         chunkPos =
-            World__CHUNK_HEIGHT_MAPS.Scale_To_Tablespace(gamespacePosition);
+            Scale_To_Tablespace(gamespacePosition);
 
         return this[chunkPos];
     }

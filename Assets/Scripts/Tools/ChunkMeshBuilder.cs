@@ -15,7 +15,6 @@ public static class ChunkMeshBuilder
             for(int x = 0; x < size; x++)
             {
                 float y = (float)chunk[x,z];
-                y = Mathf.RoundToInt(y);
                 vertices[v] = new Vector3(x, y, z);
                 v++;
             }

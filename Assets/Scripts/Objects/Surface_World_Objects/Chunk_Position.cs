@@ -28,6 +28,21 @@ public struct Noise_Position
             NOISE_Z == target.NOISE_Z;
     }
 
+    public override int GetHashCode()
+    {
+        // https://stackoverflow.com/questions/263400/what-is-the-best-algorithm-for-overriding-gethashcode
+        // Jon Skeet for primes and hashing method.
+        unchecked
+        {
+            int hash = (int) 2166136261;
+
+            hash = (hash * 16777619) ^ NOISE_X;
+            hash = (hash * 16777619) ^ NOISE_Z;
+
+            return hash;
+        }
+    }
+
     public static Noise_Position operator +(Noise_Position c1, Noise_Position c2)
         => new Noise_Position(c1.NOISE_X + c2.NOISE_X, c1.NOISE_Z + c2.NOISE_Z);
     public static Noise_Position operator -(Noise_Position c1, Noise_Position c2)

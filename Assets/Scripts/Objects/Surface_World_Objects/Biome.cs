@@ -15,8 +15,9 @@ public sealed class Biome : Spatial_Element
         => biome_Structures.Length;
     internal Object_Instance_Spawn? Get_Structure_Spawn
     (
-        Vector3 instance_Position,
+        Noise_Position instance_Position,
         double spawnWeight, 
+        double noiseDensity,
         double temperature, 
         double moisture
     )
@@ -26,13 +27,15 @@ public sealed class Biome : Spatial_Element
             bool validTemp = temperature > spawnInstance.Temperature_Threshold;
             bool validMoisture = moisture > spawnInstance.Moisture_Threshold;
             bool validWeight = spawnWeight > spawnInstance.Noise_Threshold;
+            bool validDensity = noiseDensity > spawnInstance.Noise_Density;
 
-            bool validSpawn = validTemp && validMoisture && validWeight;
+            bool validSpawn = validTemp && validMoisture && validWeight && validDensity;
 
             if (!validSpawn)
                 continue;
 
-            Object_Instance_Spawn copy = new Object_Instance_Spawn(spawnInstance, instance_Position);
+            Object_Instance_Spawn copy = 
+                new Object_Instance_Spawn(spawnInstance, instance_Position);
 
             return copy;
         }
