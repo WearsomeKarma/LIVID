@@ -20,6 +20,9 @@ public sealed class Dungeon_Hallway_Linker
         int primary_source
     )
     {
+        Linker__EDGES = new List<Dungeon_Hallway_Graph_Edge>();
+        Linker__EDGE_TABLE = new Dictionary<Dungeon_Hallway_Graph_Edge, bool>();
+        
         Dungeon_Hallway_Paths source_paths =
             new Dungeon_Hallway_Paths
             (

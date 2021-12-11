@@ -34,12 +34,14 @@ public sealed class Dungeon_Hallway_Graph
         int number_of_rooms     = dungeon_KDTree.Dungeon_KDTree__Room_Count;
         int number_of_endpoints = dungeon_KDTree.Dungeon_KDTree__Endpoint_Count;
 
-        // For 6 rooms, this is 26 verts.
-        Graph__VERTICES    = (3 * (number_of_rooms-1)) + number_of_endpoints;
+        // For 6 rooms, 22.
+        Graph__VERTICES    = 4 + (3 * dungeon_KDTree.Key_Count);
         Graph__EDGES        = Graph__VERTICES - 1;
 
         Graph__Position_Onto_Vertex_Table =
             new Dictionary<Noise_Position, int>();
+
+        Graph__ADJACENT = new List<Dungeon_Hallway_Graph_Edge>[Graph__VERTICES];
 
         Map_Tree_Recursively(dungeon_KDTree.Dungeon_KDTree__Root); 
     }
@@ -57,6 +59,8 @@ public sealed class Dungeon_Hallway_Graph
         Dungeon_KDTree_Node node
     )
     {
+        if (node == null)
+            return;
         if (node.Node__Right == null)
             Map_Room(node.Node__Right_Partition, node.Node__PARTITIONING_KEY);
         else
@@ -79,7 +83,7 @@ public sealed class Dungeon_Hallway_Graph
         Noise_Position maxXminZ = new Noise_Position(partition.Partition__MAX_X, partition.Partition__MIN_Z);
         Noise_Position maxXmaxZ = partition.Partition__MAX;
 
-        Map_Edge(minXmaxZ, minXmaxZ, partition_key);
+        Map_Edge(minXminZ, minXmaxZ, partition_key);
         Map_Edge(minXmaxZ, maxXmaxZ, partition_key);
         Map_Edge(maxXmaxZ, maxXminZ, partition_key);
         Map_Edge(maxXminZ, minXminZ, partition_key);
@@ -87,7 +91,7 @@ public sealed class Dungeon_Hallway_Graph
 
     private void Map_Edge(Noise_Position to, Noise_Position from, Noise_Position key)
     {
-        if (Check_If_Edge_Has_Key(to, key))
+        if (Check_If_Edge_Has_Key(from, to, key))
         {
             Add_Edge(to, key);
             Add_Edge(key, from);
@@ -110,14 +114,25 @@ public sealed class Dungeon_Hallway_Graph
 
     private bool Check_If_Edge_Has_Key
     (
-        Noise_Position anyEdgePoint,
+        Noise_Position from,
+        Noise_Position to,
         Noise_Position key
     )
     {
-        bool sameX = key.NOISE_X == anyEdgePoint.NOISE_X;
-        bool sameZ = key.NOISE_Z == anyEdgePoint.NOISE_Z;
+        bool sameX = key.NOISE_X == to.NOISE_X;
+        bool sameZ = key.NOISE_Z == to.NOISE_Z;
 
-        return sameX && sameZ;
+        if (sameX)
+            return 
+                (key.NOISE_Z > from.NOISE_Z && key.NOISE_Z < to.NOISE_Z)
+                ||
+                (key.NOISE_Z > to.NOISE_Z && key.NOISE_Z < from.NOISE_Z);
+        if (sameZ)
+            return 
+                (key.NOISE_X > from.NOISE_X && key.NOISE_X < to.NOISE_X)
+                ||
+                (key.NOISE_X > to.NOISE_X && key.NOISE_X < from.NOISE_X);
+        return false;
     }
 
     private void Add_Edge
@@ -148,6 +163,8 @@ public sealed class Dungeon_Hallway_Graph
     )
     {
         int from = edge.Edge__FROM;
+        if (Graph__ADJACENT[from] == null)
+            Graph__ADJACENT[from] = new List<Dungeon_Hallway_Graph_Edge>();
         Graph__ADJACENT[from].Add(edge);
     }
 }

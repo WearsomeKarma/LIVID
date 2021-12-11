@@ -123,6 +123,122 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &342924607
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 342924612}
+  - component: {fileID: 342924611}
+  - component: {fileID: 342924610}
+  - component: {fileID: 342924609}
+  - component: {fileID: 342924608}
+  m_Layer: 0
+  m_Name: Player_Capsule
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &342924608
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 342924607}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d87f3d1d70c89bf31a26b2913ab93ae5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerSpeed: 3
+  jumpHeight: 2
+--- !u!143 &342924609
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 342924607}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Height: 2
+  m_Radius: 0.5
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!23 &342924610
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 342924607}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &342924611
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 342924607}
+  m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &342924612
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 342924607}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 1356024588}
+  m_Father: {fileID: 0}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -214,9 +330,9 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
---- !u!1 &963194225
+--- !u!1 &751061807
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -224,9 +340,247 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 963194228}
-  - component: {fileID: 963194227}
-  - component: {fileID: 963194226}
+  - component: {fileID: 751061809}
+  - component: {fileID: 751061808}
+  m_Layer: 0
+  m_Name: World_Generator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &751061808
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 751061807}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bd65f4c315157811af2919b279ac713, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  seed: 0
+  render_Distance: 16
+  player: {fileID: 0}
+  ground_Material: {fileID: 2100000, guid: ad281e5719f12f19eae84266863016fd, type: 2}
+  biome_Gradient: {fileID: 2800000, guid: 7eddde18406aeaa62b35a91862160155, type: 3}
+  biomes:
+  - biome_Structures: []
+    biome_Mobs: []
+  - biome_Structures: []
+    biome_Mobs: []
+  - biome_Structures: []
+    biome_Mobs: []
+  - biome_Structures: []
+    biome_Mobs: []
+  - biome_Structures:
+    - object_Instance: {fileID: 4200147983995726976, guid: a6960c1e64c2db32d8153852a8a6100f, type: 3}
+      noise_Density: 0.8
+      noise_Threshold: 0.6
+      temperature_Threshold: 0.4
+      moisture_Threshold: 0.5
+      offset_Spawn: {x: 0, y: 0, z: 0}
+    - object_Instance: {fileID: 7992844730056657777, guid: ab7c065406c5dfe5babeddef699d78f1, type: 3}
+      noise_Density: 0.7
+      noise_Threshold: 0.6
+      temperature_Threshold: 0.4
+      moisture_Threshold: 0.5
+      offset_Spawn: {x: 0, y: 0, z: 0}
+    - object_Instance: {fileID: 7992844730056657777, guid: ab7c065406c5dfe5babeddef699d78f1, type: 3}
+      noise_Density: 0.6
+      noise_Threshold: 0.6
+      temperature_Threshold: 0.4
+      moisture_Threshold: 0.5
+      offset_Spawn: {x: 0, y: 0, z: 0}
+    biome_Mobs: []
+  - biome_Structures:
+    - object_Instance: {fileID: 5543622589130581099, guid: efa5886a9631b46019640d8765c0cd31, type: 3}
+      noise_Density: 0.9
+      noise_Threshold: 0.6
+      temperature_Threshold: 0.4
+      moisture_Threshold: 0.5
+      offset_Spawn: {x: 0, y: 0, z: 0}
+    - object_Instance: {fileID: 1605669309419145552, guid: dddfc8261f2c4320495baf960393d14e, type: 3}
+      noise_Density: 0.9
+      noise_Threshold: 0.6
+      temperature_Threshold: 0.4
+      moisture_Threshold: 0.5
+      offset_Spawn: {x: 0, y: 0, z: 0}
+    - object_Instance: {fileID: 6631449640860985122, guid: c68bd0b1987c029f88deb0fff0e1f2b5, type: 3}
+      noise_Density: 0.9
+      noise_Threshold: 0.6
+      temperature_Threshold: 0.4
+      moisture_Threshold: 0.5
+      offset_Spawn: {x: 0, y: 0, z: 0}
+    - object_Instance: {fileID: 8547525490921918186, guid: 78642c706c752ab81932df341df7e7aa, type: 3}
+      noise_Density: 0.8
+      noise_Threshold: 0.6
+      temperature_Threshold: 0.4
+      moisture_Threshold: 0.5
+      offset_Spawn: {x: 0, y: 0, z: 0}
+    - object_Instance: {fileID: 8746375368381714964, guid: 2b777eb0ca11ff1b8ac0a2bf55fdb83b, type: 3}
+      noise_Density: 0.8
+      noise_Threshold: 0.6
+      temperature_Threshold: 0.4
+      moisture_Threshold: 0.5
+      offset_Spawn: {x: 0, y: 0, z: 0}
+    - object_Instance: {fileID: 4123250200583374777, guid: cbb5e048b408ff427983b35a1aa88a2f, type: 3}
+      noise_Density: 0.8
+      noise_Threshold: 0.6
+      temperature_Threshold: 0.4
+      moisture_Threshold: 0.5
+      offset_Spawn: {x: 0, y: 0, z: 0}
+    - object_Instance: {fileID: 8614106490054987314, guid: 6ab43c3b903971efa88f9397657387f7, type: 3}
+      noise_Density: 0.8
+      noise_Threshold: 0.6
+      temperature_Threshold: 0.4
+      moisture_Threshold: 0.5
+      offset_Spawn: {x: 0, y: 0, z: 0}
+    - object_Instance: {fileID: 9037235645080159588, guid: 1b692fabc7bcf45788a21b24f8ebb430, type: 3}
+      noise_Density: 0.8
+      noise_Threshold: 0.6
+      temperature_Threshold: 0.4
+      moisture_Threshold: 0.5
+      offset_Spawn: {x: 0, y: 0, z: 0}
+    - object_Instance: {fileID: 8340342897693641049, guid: 0c2d797351b4e621da2a1f1e4fd07829, type: 3}
+      noise_Density: 0.7
+      noise_Threshold: 0.6
+      temperature_Threshold: 0.4
+      moisture_Threshold: 0.5
+      offset_Spawn: {x: 0, y: 0, z: 0}
+    - object_Instance: {fileID: 8340342897693641049, guid: 0c2d797351b4e621da2a1f1e4fd07829, type: 3}
+      noise_Density: 0.7
+      noise_Threshold: 0.6
+      temperature_Threshold: 0.4
+      moisture_Threshold: 0.5
+      offset_Spawn: {x: 0, y: 0, z: 0}
+    - object_Instance: {fileID: 3317722185984941011, guid: 11ddccf911678232ea9bab28c3dfbd91, type: 3}
+      noise_Density: 0.6
+      noise_Threshold: 0.6
+      temperature_Threshold: 0.4
+      moisture_Threshold: 0.5
+      offset_Spawn: {x: 0, y: 0, z: 0}
+    biome_Mobs: []
+  - biome_Structures:
+    - object_Instance: {fileID: 4988466965130714312, guid: 3d65e86b0185be61899d0f887dff8cf5, type: 3}
+      noise_Density: 0.98
+      noise_Threshold: 0.6
+      temperature_Threshold: 0.4
+      moisture_Threshold: 0.5
+      offset_Spawn: {x: 0, y: 0, z: 0}
+    - object_Instance: {fileID: 508099792912079602, guid: 903abec6ed8e0ce6ea12499fa66ca1d0, type: 3}
+      noise_Density: 0.965
+      noise_Threshold: 0.6
+      temperature_Threshold: 0.4
+      moisture_Threshold: 0.5
+      offset_Spawn: {x: 0, y: 0, z: 0}
+    - object_Instance: {fileID: 1343846164075349903, guid: e48f6ddc47e8d5247b9fc12b10fbfbbf, type: 3}
+      noise_Density: 0.945
+      noise_Threshold: 0.6
+      temperature_Threshold: 0.4
+      moisture_Threshold: 0.5
+      offset_Spawn: {x: 0, y: 0, z: 0}
+    - object_Instance: {fileID: 1000871730152288103, guid: 20ee76a54cc0d1332808b7870a7c8e53, type: 3}
+      noise_Density: 0.935
+      noise_Threshold: 0.6
+      temperature_Threshold: 0.4
+      moisture_Threshold: 0.5
+      offset_Spawn: {x: 0, y: 0, z: 0}
+    biome_Mobs: []
+  - biome_Structures:
+    - object_Instance: {fileID: 6354098448525369046, guid: 820adc25b996699d6ad589305eb2c55a, type: 3}
+      noise_Density: 0.2
+      noise_Threshold: 0.8
+      temperature_Threshold: 0.4
+      moisture_Threshold: 0.5
+      offset_Spawn: {x: 0, y: 0, z: 0}
+    - object_Instance: {fileID: 5596325302858791715, guid: 2234158e4139152438fc814a5741f0a8, type: 3}
+      noise_Density: 0.7
+      noise_Threshold: 0.8
+      temperature_Threshold: 0.4
+      moisture_Threshold: 0.5
+      offset_Spawn: {x: 0, y: 0, z: 0}
+    - object_Instance: {fileID: 1352642363647420189, guid: 277455f5d94b5aaa4926399666687967, type: 3}
+      noise_Density: 0.6
+      noise_Threshold: 0.8
+      temperature_Threshold: 0.4
+      moisture_Threshold: 0.5
+      offset_Spawn: {x: 0, y: 0, z: 0}
+    biome_Mobs: []
+  - biome_Structures:
+    - object_Instance: {fileID: 4196555072929915828, guid: 6a972fc006f3b777ebdbf23d2e8b51bb, type: 3}
+      noise_Density: 0.95
+      noise_Threshold: 0.6
+      temperature_Threshold: 0.4
+      moisture_Threshold: 0.5
+      offset_Spawn: {x: 0, y: 0, z: 0}
+    - object_Instance: {fileID: 7650291722787748421, guid: d1aa86c863916e9c6b934cd48a223077, type: 3}
+      noise_Density: 0.95
+      noise_Threshold: 0.6
+      temperature_Threshold: 0.4
+      moisture_Threshold: 0.5
+      offset_Spawn: {x: 0, y: 0, z: 0}
+    - object_Instance: {fileID: 3152756599435312468, guid: 47306dc0df2b310878b7d690eaf9ed35, type: 3}
+      noise_Density: 0.95
+      noise_Threshold: 0.6
+      temperature_Threshold: 0.4
+      moisture_Threshold: 0.5
+      offset_Spawn: {x: 0, y: 0, z: 0}
+    - object_Instance: {fileID: 3605143976427687995, guid: 7102f33b89f995b588d1add1091093ef, type: 3}
+      noise_Density: 0.95
+      noise_Threshold: 0.6
+      temperature_Threshold: 0.4
+      moisture_Threshold: 0.5
+      offset_Spawn: {x: 0, y: 0, z: 0}
+    - object_Instance: {fileID: 6365873455957047554, guid: ab51882e77e9f0086a15b788d180baeb, type: 3}
+      noise_Density: 0.95
+      noise_Threshold: 0.6
+      temperature_Threshold: 0.4
+      moisture_Threshold: 0.5
+      offset_Spawn: {x: 0, y: 0, z: 0}
+    biome_Mobs: []
+  - biome_Structures:
+    - object_Instance: {fileID: 4988466965130714312, guid: 3d65e86b0185be61899d0f887dff8cf5, type: 3}
+      noise_Density: 0.95
+      noise_Threshold: 0.6
+      temperature_Threshold: 0.4
+      moisture_Threshold: 0.5
+      offset_Spawn: {x: 0, y: 0, z: 0}
+    - object_Instance: {fileID: 508099792912079602, guid: 903abec6ed8e0ce6ea12499fa66ca1d0, type: 3}
+      noise_Density: 0.95
+      noise_Threshold: 0.6
+      temperature_Threshold: 0.4
+      moisture_Threshold: 0.5
+      offset_Spawn: {x: 0, y: 0, z: 0}
+    biome_Mobs: []
+--- !u!4 &751061809
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 751061807}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1356024587
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1356024588}
+  - component: {fileID: 1356024591}
+  - component: {fileID: 1356024590}
+  - component: {fileID: 1356024589}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -234,21 +588,49 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!81 &963194226
+--- !u!4 &1356024588
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1356024587}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.6, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 342924612}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1356024589
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1356024587}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1447022da55960d6abb60c15e8e755d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mouseSensitivity: 1000
+  playerBody: {fileID: 342924612}
+--- !u!81 &1356024590
 AudioListener:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 963194225}
+  m_GameObject: {fileID: 1356024587}
   m_Enabled: 1
---- !u!20 &963194227
+--- !u!20 &1356024591
 Camera:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 963194225}
+  m_GameObject: {fileID: 1356024587}
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
@@ -285,72 +667,3 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!4 &963194228
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1795375179
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1795375181}
-  - component: {fileID: 1795375180}
-  m_Layer: 0
-  m_Name: World_Generator
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1795375180
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1795375179}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9bd65f4c315157811af2919b279ac713, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  render_Distance: 1
-  player: {fileID: 0}
-  defined_Biomes:
-  - biome_Structures:
-    - object_Instance: {fileID: 0}
-      empty_Allocation_Radius: 0
-      offset_Radius: 0
-      noise_Threshold: 0
-    biome_Mobs:
-    - object_Instance: {fileID: 0}
-      empty_Allocation_Radius: 0
-      offset_Radius: 0
---- !u!4 &1795375181
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1795375179}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

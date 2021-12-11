@@ -4,8 +4,7 @@ using System.Collections.Generic;
 public sealed class Lowlands_Dungeon :
     Dungeon
 {
-    public Lowlands_Dungeon(int width, int height, int room_count) 
-    : base(width, height, room_count)
+    public Lowlands_Dungeon(int width, int height, int room_count) : base(width, height, room_count)
     {
     }
 
@@ -19,7 +18,7 @@ public sealed class Lowlands_Dungeon :
         throw new System.NotImplementedException();
     }
 
-    protected override Dungeon_KDTree_Node Get_Initial_Room(IEnumerable<Dungeon_KDTree_Node> endpoints)
+    protected override Dungeon_KDTree_Partition Get_Initial_Room(IEnumerable<Dungeon_KDTree_Partition> endpoint_partitions)
     {
         throw new System.NotImplementedException();
     }
@@ -29,7 +28,12 @@ public sealed class Lowlands_Dungeon :
         throw new System.NotImplementedException();
     }
 
-    protected override IEnumerable<Dungeon_Cell> Get_Cells()
+    internal override IEnumerable<Dungeon_Runtime_Cell> Generate_Runtime_Cells(Dungeon_Schematic schematic)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    internal override IEnumerable<Dungeon_Cell> Get_Cells()
     {
         throw new System.NotImplementedException();
     }

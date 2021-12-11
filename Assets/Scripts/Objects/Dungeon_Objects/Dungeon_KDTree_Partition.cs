@@ -1,13 +1,16 @@
 
-public class Dungeon_KDTree_Partition
-{
-    public int Partition__MIN_X { get; }
-    public int Partition__MAX_X { get; }
-    public int Partition__MIN_Z { get; }
-    public int Partition__MAX_Z { get; }
+using System.Collections.Generic;
 
+public struct Dungeon_KDTree_Partition
+{
+    public Noise_Position Partition__Key { get; internal set; }
     public Noise_Position Partition__MIN { get; }
     public Noise_Position Partition__MAX { get; }
+
+    public int Partition__MIN_X => Partition__MIN.NOISE_X; 
+    public int Partition__MAX_X => Partition__MAX.NOISE_X;
+    public int Partition__MIN_Z => Partition__MIN.NOISE_Z;
+    public int Partition__MAX_Z => Partition__MAX.NOISE_Z;
 
     public int Partition__AREA
         => (Partition__MAX_X - Partition__MIN_X) * (Partition__MAX_Z - Partition__MIN_Z);
@@ -35,15 +38,32 @@ public class Dungeon_KDTree_Partition
     : this(min, parent.Partition__MAX)
     {}
 
-    private Dungeon_KDTree_Partition(Noise_Position min, Noise_Position max)
+    private Dungeon_KDTree_Partition
+    (
+        Noise_Position min, 
+        Noise_Position max
+    )
     {
+        Partition__Key = new Noise_Position();
         Partition__MIN = min;
         Partition__MAX = max;
+    }
 
-        Partition__MIN_X = Partition__MIN.NOISE_X;
-        Partition__MAX_X = Partition__MAX.NOISE_X;
-        Partition__MIN_Z = Partition__MIN.NOISE_Z;
-        Partition__MAX_Z = Partition__MAX.NOISE_Z;
+    public IEnumerable<Noise_Position> Get_Positions()
+    {
+        int row = Partition__MIN_Z, col = Partition__MIN_X;
+
+        while(row < Partition__MAX_Z)
+        {
+            yield return new Noise_Position(col, row);
+            col++;
+            if (col >= Partition__MAX_X)
+            {
+                col = Partition__MIN_X;
+                row++;
+            }
+        }
+        yield break;
     }
 
     public bool Contains_Point(Noise_Position point)

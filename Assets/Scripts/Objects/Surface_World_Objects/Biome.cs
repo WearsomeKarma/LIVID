@@ -16,30 +16,34 @@ public sealed class Biome : Spatial_Element
     internal Object_Instance_Spawn? Get_Structure_Spawn
     (
         Noise_Position instance_Position,
+        double spawnID,
         double spawnWeight, 
         double noiseDensity,
         double temperature, 
         double moisture
     )
     {
-        foreach(Object_Instance_Spawn spawnInstance in biome_Structures)
-        {
-            bool validTemp = temperature > spawnInstance.Temperature_Threshold;
-            bool validMoisture = moisture > spawnInstance.Moisture_Threshold;
-            bool validWeight = spawnWeight > spawnInstance.Noise_Threshold;
-            bool validDensity = noiseDensity > spawnInstance.Noise_Density;
+        if (biome_Structures.Length == 0)
+            return null;
 
-            bool validSpawn = validTemp && validMoisture && validWeight && validDensity;
+        int id = (int)(biome_Structures.Length * (float)spawnID);
 
-            if (!validSpawn)
-                continue;
+        Object_Instance_Spawn spawnInstance = biome_Structures[id];
 
-            Object_Instance_Spawn copy = 
-                new Object_Instance_Spawn(spawnInstance, instance_Position);
+        bool validTemp = temperature > spawnInstance.Temperature_Threshold;
+        bool validMoisture = moisture > spawnInstance.Moisture_Threshold;
+        bool validWeight = spawnWeight > spawnInstance.Noise_Threshold;
+        bool validDensity = noiseDensity > spawnInstance.Noise_Density;
 
-            return copy;
-        }
-        return null;
+        bool validSpawn = validTemp && validMoisture && validWeight && validDensity;
+
+        if (!validSpawn)
+            return null;
+
+        Object_Instance_Spawn copy = 
+            new Object_Instance_Spawn(spawnInstance, instance_Position);
+
+        return copy;
     }
 
     /// <summary>

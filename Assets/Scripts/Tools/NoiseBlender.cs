@@ -99,6 +99,7 @@ public static class NoiseBlender
         double peak_world=1
     )
     {
+        return attributeWeight;
         double peakDelta = peak_attribute - attributeWeight;
 
         //If we are high on the gradient

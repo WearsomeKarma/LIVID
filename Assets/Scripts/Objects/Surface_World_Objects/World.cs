@@ -9,6 +9,7 @@ public class World :
     private Chunk_Noise_Table World__CHUNK_STRUCTURE_GROUP_MAP { get; }
     private Chunk_Noise_Table World__CHUNK_STRUCTURE_NOISE_MAP { get; }
 
+    private int World__BIOME_SEED { get; }
     private World_Noise_Table World__BIOME_HEIGHT_MAPS;
     private World_Noise_Table World__BIOME_TEMPERATURE_MAPS { get; }
     private World_Noise_Table World__BIOME_MOISTURE_MAPS { get; }
@@ -41,6 +42,7 @@ public class World :
     )
     {
         System.Random seeder = new System.Random(seed);
+        World__BIOME_SEED = seed;
         int seed_BiomeHeightMap = seed;
         int seed_ChunkHeightMap = seeder.Next();
         int seed_ChunkStructureGroup = seeder.Next();
@@ -182,6 +184,9 @@ public class World :
         NoiseMap chunk_Final_Height_Map =
             new NoiseMap(Chunk_Noise_Table.CHUNK_SIZE);
 
+        NoiseMap chunk_Biome_Structure_ID =
+            StaticNoise.Get_Noise_Map(position, World__BIOME_SEED);
+
         List<Object_Instance_Spawn> structures =
             new List<Object_Instance_Spawn>();
 
@@ -244,8 +249,9 @@ public class World :
                     biome?.Get_Structure_Spawn
                     (
                         gamespace_Specific_Position,
-                        chunk_Structure_Group[chunk_Local_Position],
+                        chunk_Biome_Structure_ID[chunk_Local_Position],
                         chunk_Structure_Noise[chunk_Local_Position],
+                        chunk_Structure_Group[chunk_Local_Position],
                         temperature,
                         moisture
                     );

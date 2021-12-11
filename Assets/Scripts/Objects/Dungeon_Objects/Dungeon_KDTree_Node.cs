@@ -69,6 +69,20 @@ public sealed class Dungeon_KDTree_Node
         Set_Partitions(left_max, right_min);
     }
 
+    internal int Compare(Noise_Position position)
+    {
+        if(Node__IS_X_OR_Y)
+        {
+            int deltaX = position.NOISE_X - Node__PARTITIONING_KEY.NOISE_X;
+
+            return deltaX;
+        }
+
+        int deltaZ = position.NOISE_Z - Node__PARTITIONING_KEY.NOISE_Z;
+
+        return deltaZ;
+    }
+
     private void Set_Partitions
     (
         Noise_Position left_max,
@@ -78,22 +92,22 @@ public sealed class Dungeon_KDTree_Node
         Node__Left_Partition =
             new Dungeon_KDTree_Partition
             (
-                left_max,
-                Node__PARTITION
-            );
+                Node__PARTITION,
+                left_max
+            ) {Partition__Key = Node__PARTITIONING_KEY};
         Node__Right_Partition =
             new Dungeon_KDTree_Partition
             (
-                Node__PARTITION,
-                right_min
-            );
+                right_min,
+                Node__PARTITION
+            ) {Partition__Key = Node__PARTITIONING_KEY};
     }
 
-    internal void Create_Partition_Left(Noise_Position key)
+    internal Dungeon_KDTree_Node Create_Partition_Left(Noise_Position key)
     {
         if (Node__Left != null)
             throw new InvalidOperationException("Left Node was already partitioned.");
-        Node__Left =
+        return Node__Left =
             new Dungeon_KDTree_Node 
             (
                 key,
@@ -102,48 +116,16 @@ public sealed class Dungeon_KDTree_Node
             );
     }
 
-    internal void Create_Partition_Right(Noise_Position key)
+    internal Dungeon_KDTree_Node Create_Partition_Right(Noise_Position key)
     {
         if (Node__Right != null)
             throw new InvalidOperationException("Right Node was already partitioned.");
-        Node__Right =
+        return Node__Right =
             new Dungeon_KDTree_Node
             (
                 key,
                 Node__Right_Partition,
                 Node__DEPTH+1
             );
-    }
-
-    internal Dungeon_KDTree_Node Traverse
-    (
-        Noise_Position point, 
-        out bool isLeft,
-        out bool isRight,
-        out bool isSelf,
-        out bool isDestination
-    )
-    {
-        int deltaX = point.NOISE_X - Node__PARTITIONING_KEY.NOISE_X;
-        int deltaZ = point.NOISE_Z - Node__PARTITIONING_KEY.NOISE_Z;
-
-        int compare = (Node__IS_X_OR_Y) ? deltaX : deltaZ;
-
-        isLeft = compare < 0;
-        isRight = compare > 0;
-        isSelf = compare == 0;
-
-        isDestination = isSelf;
-        isDestination = isDestination || (isLeft && Node__Left == null);
-        isDestination = isDestination || (isRight && Node__Right == null);
-
-        if (!isDestination && isLeft)
-            return Node__Left;
-
-        if (!isDestination && isRight)
-            return Node__Right;
-
-        isDestination = true;
-        return this;
     }
 }

@@ -14,27 +14,38 @@ public sealed class Dungeon_KDTree
     /// </summary>
     public int Dungeon_KDTree__Endpoint_Count { get; private set; }
 
-    private List<Dungeon_KDTree_Node> Dungeon_KDTree__ENDPOINTS { get; }
-    public IEnumerable<Dungeon_KDTree_Node> Endpoints
-        => Dungeon_KDTree__ENDPOINTS.ToList();
+    private List<Dungeon_KDTree_Partition> Dungeon_KDTree__ENDPOINT_PARTITIONS { get; }
+    public IEnumerable<Dungeon_KDTree_Partition> Endpoints_Partitions
+        => Dungeon_KDTree__ENDPOINT_PARTITIONS.ToList();
+
+    private Dictionary<Noise_Position, Dungeon_KDTree_Node> Dungeon_KDTree__NODE_LOOKUP { get; }
+    public Dungeon_KDTree_Node Get_Node(Dungeon_KDTree_Partition partition)
+        => Dungeon_KDTree__NODE_LOOKUP[partition.Partition__Key];
 
     private List<Noise_Position> Dungeon_KDTree__KEYS { get; }
     public IEnumerable<Noise_Position> Keys
         => Dungeon_KDTree__KEYS.ToList();
+    public int Key_Count
+        => Dungeon_KDTree__KEYS.Count;
 
     internal Dungeon_KDTree
     (
-        Dungeon_KDTree_Partition initial_partition
+        Dungeon_KDTree_Partition partitioning_space
     )
     {
         Dungeon_KDTree__SPACE =
-            initial_partition;
+            partitioning_space;
 
         Dungeon_KDTree__Endpoint_Count = 1;
         Dungeon_KDTree__Room_Count = 1;
 
-        Dungeon_KDTree__ENDPOINTS =
-            new List<Dungeon_KDTree_Node>();
+        Dungeon_KDTree__KEYS = new List<Noise_Position>();
+
+        Dungeon_KDTree__ENDPOINT_PARTITIONS =
+            new List<Dungeon_KDTree_Partition>() {partitioning_space};
+
+        Dungeon_KDTree__NODE_LOOKUP =
+            new Dictionary<Noise_Position, Dungeon_KDTree_Node>();
     }
 
     internal void Partition(Noise_Position position)
@@ -44,32 +55,24 @@ public sealed class Dungeon_KDTree
 
         Dungeon_KDTree_Node node;
         if (Dungeon_KDTree__Root == null)
-            node = Initial_Partition(position);
+        {
+            // this code is pretty awful but oh well.
+            Dungeon_KDTree_Partition root_partition = new Dungeon_KDTree_Partition(Dungeon_KDTree__SPACE.Partition__MAX);
+            root_partition.Partition__Key = position;
+            node = Dungeon_KDTree__Root = new Dungeon_KDTree_Node(position, root_partition);
+            Dungeon_KDTree__ENDPOINT_PARTITIONS[0] = root_partition;
+        }
         else
             node = Traverse_Partition(position);
+
+        Dungeon_KDTree__NODE_LOOKUP.Add(node.Node__PARTITIONING_KEY, node);
         
-        Dungeon_KDTree__Room_Count++;
+        Dungeon_KDTree__Room_Count+=2;
         Dungeon_KDTree__Endpoint_Count++;
-        if (node.Node__Left != null && node.Node__Right != null)
-        {
-            Dungeon_KDTree__ENDPOINTS.Remove(node);
-            Dungeon_KDTree__Endpoint_Count--;
-        }
-    }
-
-    private Dungeon_KDTree_Node Initial_Partition(Noise_Position root_key)
-    {
-        Dungeon_KDTree__Root =
-            new Dungeon_KDTree_Node
-            (
-                root_key,
-                Dungeon_KDTree__SPACE
-            );
-
-        Dungeon_KDTree__ENDPOINTS
-            .Add(Dungeon_KDTree__Root);
-
-        return Dungeon_KDTree__Root;
+        
+        Dungeon_KDTree__ENDPOINT_PARTITIONS.Remove(node.Node__PARTITION);
+        Dungeon_KDTree__ENDPOINT_PARTITIONS.Add(node.Node__Left_Partition);
+        Dungeon_KDTree__ENDPOINT_PARTITIONS.Add(node.Node__Right_Partition);
     }
 
     private Dungeon_KDTree_Node Traverse_Partition(Noise_Position position)
@@ -84,10 +87,10 @@ public sealed class Dungeon_KDTree
         }
 
         if (isLeft)
-            node.Create_Partition_Left(node.Node__PARTITIONING_KEY);
+            return node.Create_Partition_Left(position);
 
         if (isRight)
-            node.Create_Partition_Right(node.Node__PARTITIONING_KEY);
+            return node.Create_Partition_Right(position);
 
         return node;
     }
@@ -104,25 +107,31 @@ public sealed class Dungeon_KDTree
             Dungeon_KDTree__Root;
 
         isLeft = false;
-        isRight = false; 
+        isRight = false;
         isSelf = false;
-        bool isDestination = false;
 
         if (destination == null)
             return null;
 
-        while(!isDestination)
+        while(true)
         {
-            destination = 
-                destination
-                .Traverse
-                (
-                    position, 
-                    out isLeft,
-                    out isRight,
-                    out isSelf,
-                    out isDestination
-                );
+            int compare = destination.Compare(position);
+
+            if (compare < 0)
+            {
+                if (isLeft = destination.Node__Left == null)
+                    break;
+                destination = destination.Node__Left;
+                continue;
+            }
+            if (compare > 0)
+            {
+                if (isRight = destination.Node__Right == null)
+                    break;
+                destination = destination.Node__Right;
+                continue;
+            }
+            break;
         }
 
         return destination;
