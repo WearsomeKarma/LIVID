@@ -80,7 +80,11 @@ MonoBehaviour:
     current_health: 10
     movement_Speed: 2
     jump_Speed: 2
-    attack_Speed: 2
+    attack_Time: 3
+    minimum_Idle_Time: 3
+    maximum_Idle_Time: 10
+    patrol_Time: 20
+    despawn_Time: 1
     damage_Output: 3
     field_Of_Aggression: 10
     death_Hook:
@@ -94,7 +98,6 @@ MonoBehaviour:
   z_maximum_patrol: 5
   aggroRange: 20
   attackRange: 1.5
-  despawn_time: 3
   health_bar: {fileID: 8292265686255936884}
   entity_Animator: {fileID: 2496318030144604613}
   environment_Scanner: {fileID: 2496318030938293047}
