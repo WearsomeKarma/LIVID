@@ -2173,6 +2173,10 @@ PrefabInstance:
       value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 2496318029453842896, guid: cf40bf457a61214a193fbcbec6f2874b, type: 3}
+      propertyPath: attackRange
+      value: 3.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 2496318029453842896, guid: cf40bf457a61214a193fbcbec6f2874b, type: 3}
       propertyPath: x_maximum_patrol
       value: 23
       objectReference: {fileID: 0}
@@ -2385,7 +2389,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2496318029453842896, guid: cf40bf457a61214a193fbcbec6f2874b, type: 3}
       propertyPath: attackRange
-      value: 2.25
+      value: 3.25
       objectReference: {fileID: 0}
     - target: {fileID: 2496318029453842896, guid: cf40bf457a61214a193fbcbec6f2874b, type: 3}
       propertyPath: x_maximum_patrol
@@ -3474,7 +3478,11 @@ MonoBehaviour:
     current_health: 10
     movement_Speed: 2
     jump_Speed: 2
-    attack_Speed: 2
+    attack_Time: 3
+    minimum_Idle_Time: 3
+    maximum_Idle_Time: 10
+    patrol_Time: 20
+    despawn_Time: 1
     damage_Output: 3
     field_Of_Aggression: 0
     death_Hook:
@@ -5314,6 +5322,14 @@ PrefabInstance:
       value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 4675678421726247329, guid: 1324deb59351d7c53a205e7d46c933c1, type: 3}
+      propertyPath: livid_entity.attack_Speed
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4675678421726247329, guid: 1324deb59351d7c53a205e7d46c933c1, type: 3}
+      propertyPath: livid_entity.damage_Output
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4675678421726247329, guid: 1324deb59351d7c53a205e7d46c933c1, type: 3}
       propertyPath: livid_entity.current_health
       value: 80
       objectReference: {fileID: 0}
@@ -5371,7 +5387,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4675678421726247331, guid: 1324deb59351d7c53a205e7d46c933c1, type: 3}
       propertyPath: m_Name
-      value: Skeleton
+      value: Skeleton King
       objectReference: {fileID: 0}
     - target: {fileID: 4675678421726247331, guid: 1324deb59351d7c53a205e7d46c933c1, type: 3}
       propertyPath: m_IsActive
@@ -7580,6 +7596,10 @@ PrefabInstance:
     - target: {fileID: 727596955215150081, guid: aa28b83a628dbfa67ba803f427741a2e, type: 3}
       propertyPath: aggroRange
       value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 727596955215150081, guid: aa28b83a628dbfa67ba803f427741a2e, type: 3}
+      propertyPath: attackRange
+      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: 727596955215150081, guid: aa28b83a628dbfa67ba803f427741a2e, type: 3}
       propertyPath: x_maximum_patrol
@@ -12700,6 +12720,10 @@ PrefabInstance:
     - target: {fileID: 727596955215150081, guid: aa28b83a628dbfa67ba803f427741a2e, type: 3}
       propertyPath: aggroRange
       value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 727596955215150081, guid: aa28b83a628dbfa67ba803f427741a2e, type: 3}
+      propertyPath: attackRange
+      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: 727596955215150081, guid: aa28b83a628dbfa67ba803f427741a2e, type: 3}
       propertyPath: x_maximum_patrol
