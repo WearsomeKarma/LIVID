@@ -31,7 +31,7 @@ public sealed class Chunk_Generator :
     /// off of.
     /// </summary>
     [SerializeField]
-    private GameObject player;
+    private Sensitive_Transform player;
 
     /// <summary>
     /// The material which the ground uses.
@@ -45,9 +45,14 @@ public sealed class Chunk_Generator :
     [SerializeField]
     private Biome[] biomes;
 
+    [SerializeField]
+    private GameObject dungeon_Entrance;
+
     private World Chunk_Generator__World { get; set; }
     private Spatial_Table<Runtime_Chunk> Runtime_Chunk_Map { get; set; }
     private Vector3 Chunk_Generator__World_Offset { get; set; }
+
+    private bool Initialized_Position { get; set; }
 
     public void Start()
     {
@@ -84,7 +89,7 @@ public sealed class Chunk_Generator :
                 sqrtSize,
                 biomeGrid,
                 biome_Gradient,
-                handleInitialGeneration: Set_Player_SpawnY
+                handleInitialGeneration: Set_Player_Y
             );
 
         int size = Chunk_Noise_Table.CHUNK_SIZE - 1;
@@ -102,27 +107,44 @@ public sealed class Chunk_Generator :
             );
     }
 
-    private void Set_Player_SpawnY()
+    private void Assert_Player_Y()
+    {
+        if (player.transform.position.y < Chunk_Generator__World.Get_Height(player.transform.position - Chunk_Generator__World_Offset))
+        {
+            Debug.Log("Asserted player's y to be: " + player.transform.position.y);
+            Set_Player_Y();
+        }
+    }
+
+    private void Set_Player_Y()
     {
         float height =
             4
             +
             (float)Chunk_Generator__World.Get_Height(player.transform.position - Chunk_Generator__World_Offset);
 
-        player.transform.position =
-            new Vector3(player.transform.position.x, height, player.transform.position.z);
+        //player.Set_Y(height);
+        Vector3 pos = player.transform.position;
+        pos.y = height;
+        player.Set_Position(pos);
     }
 
     public void Update()
     {
         //On each update, check to see if the player
         //has updated their chunk index by moving.
-        
+               
         Vector3 center = 
             player.transform.position;
 
         Chunk_Generator__World
             .Check_For_Updates(center, out _, out _);
+
+        if (!Initialized_Position)
+        {
+            Initialized_Position = true;
+            Assert_Player_Y();
+        }
 
         List<Noise_Position> generatedPositions;
 
@@ -140,7 +162,24 @@ public sealed class Chunk_Generator :
 
     private Runtime_Chunk Generate_Chunk(Noise_Position position)
     {
+        float dungeon_chunk_chance = DariusPerlinNoise.Get_Noise(position.NOISE_X, position.NOISE_Z, Seed) * 100;
+        bool is_dungeon_chunk = dungeon_chunk_chance == 1;
+
         Chunk chunk = Chunk_Generator__World[position];
+
+        double height = chunk[1,1];
+
+        if (is_dungeon_chunk)
+        {
+            for(int i=1;i<Chunk_Noise_Table.CHUNK_SIZE-1;i++)
+            {
+                for(int j=1;j<Chunk_Noise_Table.CHUNK_SIZE-1;j++)
+                {
+                    Noise_Position pos = new Noise_Position(j,i);
+                    chunk[pos] = height;
+                }
+            }
+        }
 
         Mesh ground_Mesh = ChunkMeshBuilder.Build_Height_Mesh(chunk, Chunk_Noise_Table.CHUNK_SIZE);
 
@@ -177,6 +216,27 @@ public sealed class Chunk_Generator :
             Chunk_Generator__World_Offset;
         ground_Object.transform.position = groundPosition;
         ground_Object.name = position.ToString();
+
+        if (is_dungeon_chunk)
+        {
+            GameObject dungeon_entrance_instance = GameObject.Instantiate(dungeon_Entrance);
+
+            Vector3 pos = generated_Chunk.Chunk_Game_Object.transform.position;
+            
+            pos.y = (float)height;
+
+            dungeon_entrance_instance.transform.position = pos;
+            dungeon_entrance_instance.transform.position += 
+                new Vector3
+                (
+                    Chunk_Noise_Table.CHUNK_SIZE / 2, 
+                    0,
+                    Chunk_Noise_Table.CHUNK_SIZE / 2
+                    );
+
+            generated_Chunk.Add_Structure(dungeon_entrance_instance);
+            return generated_Chunk;
+        }
 
         foreach(Object_Instance_Spawn structure_Instance in chunk.Get_Structure_Object())
         {

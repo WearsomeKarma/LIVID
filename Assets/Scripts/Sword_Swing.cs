@@ -17,6 +17,8 @@ public class Sword_Swing : MonoBehaviour
 
     public bool Is_Swinging { get; private set; }
     public bool Is_Resetting { get; private set; }
+    public bool Is_Not_In_Motion
+        => !Is_Swinging && !Is_Resetting;
 
     private Timer Swing_Timer { get; }
     private Timer Reset_Timer { get; }

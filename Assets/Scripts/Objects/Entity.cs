@@ -1,6 +1,7 @@
 
 using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 [Serializable]
 public class Entity 
@@ -13,6 +14,8 @@ public class Entity
 
     [SerializeField]
     private int health_max;
+    public int Health_Max
+        => health_max;
     [SerializeField]
     private int current_health;
     public int Health
@@ -20,12 +23,18 @@ public class Entity
         get => current_health;
         private set
         {
-            if (value < current_health)
-                Damaged?.Invoke(this);
-            if (value > current_health)
-                Healed?.Invoke(this);
+            if (current_health == value)
+                return;
 
+            int old_health = current_health;
             current_health = value;
+
+            if (value < old_health)
+            {
+                Damaged?.Invoke(this);
+            }
+            if (value > old_health)
+                Healed?.Invoke(this);
 
             if (current_health <= HEALTH_DEATH)
                 Death?.Invoke(this);
@@ -34,6 +43,7 @@ public class Entity
 
     public bool Is_Dead
         => Health <= HEALTH_DEATH;
+    public bool Is_A_Copy { get; private set; }
 
     [SerializeField]
     private float movement_Speed;
@@ -46,9 +56,25 @@ public class Entity
         => jump_Speed;
 
     [SerializeField]
-    private float attack_Speed;
-    public float Attack_Speed 
-        => attack_Speed;
+    private float attack_Time = 3;
+    public float Attack_Time 
+        => attack_Time;
+    [SerializeField]
+    private float minimum_Idle_Time = 3;
+    public float Minimum_Idle_Time 
+        => minimum_Idle_Time;
+    [SerializeField]
+    private float maximum_Idle_Time = 10;
+    public float Maximum_Idle_Time 
+        => maximum_Idle_Time;
+    [SerializeField]
+    private float patrol_Time = 20;
+    public float Patrol_Time 
+        => patrol_Time;
+    [SerializeField]
+    private float despawn_Time= 1;
+    public float Despawn_Time 
+        => patrol_Time;
 
     [SerializeField]
     private uint damage_Output;
@@ -64,8 +90,12 @@ public class Entity
     internal event Action<Entity> Healed;
     internal event Action<Entity> Death;
 
+    [SerializeField]
+    private UnityEvent death_Hook;
+
     public Entity()
     {
+        Death += (e) => death_Hook?.Invoke();
     }
 
     public Entity(Entity clone)
@@ -76,7 +106,7 @@ public class Entity
         clone.current_health,
         clone.movement_Speed, 
         clone.jump_Speed, 
-        clone.attack_Speed, 
+        clone.attack_Time, 
         clone.damage_Output,
         clone.field_Of_Aggression
     )
@@ -93,12 +123,27 @@ public class Entity
         float field_Of_Aggression
     )
     {
+        this.health_max = health_max;
         this.current_health = current_health;
         this.movement_Speed = movement_Speed;
         this.jump_Speed = jump_Speed;
-        this.attack_Speed = attack_Speed;
+        this.attack_Time = attack_Speed;
         this.damage_Output = damage_Output;
         this.field_Of_Aggression = field_Of_Aggression;
+
+        Death += (e) => death_Hook?.Invoke();
+    }
+
+    internal void Copy(Entity entity)
+    {
+        Is_A_Copy = true;
+        Set_Max_Health((uint)entity.health_max);
+        Set_Health((uint)entity.current_health);
+        movement_Speed = entity.movement_Speed;
+        jump_Speed = entity.jump_Speed;
+        attack_Time = entity.attack_Time;
+        damage_Output = entity.damage_Output;
+        field_Of_Aggression = entity.field_Of_Aggression;
     }
 
     /// <summary>
@@ -108,7 +153,7 @@ public class Entity
     internal void Damage(uint damage)
     {
         int udamage = (int)damage;
-        Health = Mathf.Clamp(Health - udamage, 0, health_max);
+        Health = Mathf.Clamp(current_health - udamage, 0, health_max);
     }
 
     /// <summary>
@@ -117,7 +162,7 @@ public class Entity
     /// </summary>
     internal void Heal(uint heal)
     {
-        Health = Mathf.Clamp(Health + (int)heal, 0, health_max);
+        Health = Mathf.Clamp(current_health + (int)heal, 0, health_max);
     }
 
     /// <summary>

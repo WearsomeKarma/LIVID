@@ -1,6 +1,7 @@
 
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 
 public class Entity_Controller : MonoBehaviour
 {
@@ -27,9 +28,10 @@ public class Entity_Controller : MonoBehaviour
 
     [SerializeField]
     private float attackRange;
+    
 
     [SerializeField]
-    private float despawn_time = 3;
+    private Text health_bar;
 
     private GameObject Target { get; set; }
     private Vector3 Patrol_Destination { get; set; }
@@ -59,7 +61,9 @@ public class Entity_Controller : MonoBehaviour
 
     public void Start()
     {
-        Despawn_Timer.Set(despawn_time);
+        Patrol_Timer.Set(livid_entity.Patrol_Time);
+        Attack_Timer.Set(livid_entity.Attack_Time);
+        Despawn_Timer.Set(livid_entity.Despawn_Time);
 
         environment_Scanner
             .Event__Objects_Detected += Check_Target_Aggression;
@@ -70,11 +74,19 @@ public class Entity_Controller : MonoBehaviour
 
         livid_entity.Damaged += (e) => Damaged();
         livid_entity.Death += (e) => Death();
+
+        Update_Health_Bar();
+    }
+
+    private void Update_Health_Bar()
+    {
+        health_bar.text = $"{livid_entity.Health}/{livid_entity.Health_Max}";
     }
 
     private void Damaged()
     {
         entity_Animator.Play_Hurt();
+        Update_Health_Bar();
     }
 
     private void Death()
@@ -91,13 +103,16 @@ public class Entity_Controller : MonoBehaviour
             return;
         }
 
-        Attack_Timer.Elapse(Time.deltaTime);
         AI();
     }
 
     private void AI()
     {
-        if (Target == null)
+        bool should_Patrol =
+            Target == null
+            ||
+            Entity_Manager.Is_Dead(Target);
+        if (should_Patrol)
         {
             if (!Idle_Timer.Is_Elapsed)
             {
@@ -158,7 +173,7 @@ public class Entity_Controller : MonoBehaviour
             
             if (!Is_Patrolling)
             {
-                Idle_Timer.Set(Random.Range(1, 10));
+                Idle_Timer.Set(Random.Range(livid_entity.Minimum_Idle_Time, livid_entity.Maximum_Idle_Time));
             }
 
             return;
@@ -181,9 +196,10 @@ public class Entity_Controller : MonoBehaviour
 
         NavMeshAgent.destination = transform.position;
 
-        if (!Attack_Timer.Is_Elapsed)
+        if (!Attack_Timer.Elapse(Time.deltaTime))
             return;
         Attack_Timer.Set();
+        Entity_Manager.Damage_Player(livid_entity.Damage_Output);
 
         entity_Animator.Play_Attack();
     }

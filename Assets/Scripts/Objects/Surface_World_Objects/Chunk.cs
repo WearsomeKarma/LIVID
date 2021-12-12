@@ -27,7 +27,13 @@ public class Chunk : Spatial_Element
     }
 
     public double this[Noise_Position position]
-        => Chunk_HEIGHT_MAP[position];
+    {
+        get => Chunk_HEIGHT_MAP[position];
+        set => Chunk_HEIGHT_MAP[position] = value;
+    }
     public double this[int x, int z]
-        => Chunk_HEIGHT_MAP[x,z];
+    {
+        get => Chunk_HEIGHT_MAP[x,z];
+        set => Chunk_HEIGHT_MAP[x,z] = value;
+    }
 }
